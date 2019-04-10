@@ -6,7 +6,7 @@ import torchvision.models as models
 from torch import nn
 
 class NCNet(torch.nn.Module):
-    def __init__(self, kernel_sizes, channels, featExtractor, featExtractorPth, finetuneFeatExtractor, softmaxMutualMatching):
+    def __init__(self, kernel_sizes, channels, featExtractor, featExtractorPth, finetuneFeatExtractor):
         super(NCNet, self).__init__()
         
         ## Define feature extractor
@@ -29,7 +29,7 @@ class NCNet(torch.nn.Module):
             self.featExtractor.eval()
 
          ## Mutual Matching method
-        self.mutualMatch = MutualMatchingSoftMax if softmaxMutualMatching else MutualMatching
+        self.mutualMatch = MutualMatching
         
         ## NeighConsensus
         self.NeighConsensus = NeighConsensus(kernel_sizes, channels)
@@ -41,19 +41,14 @@ class NCNet(torch.nn.Module):
         featA, featB = self.featExtractor(xA), self.featExtractor(xB)
         ## Normalization
         featANorm, featBNorm = featureL2Norm(featA), featureL2Norm(featB)
-        #print ('feat L2:', featANorm[0, 0, :, :])
         ## Correlation Tensor
         corr4d = featureCorrelation(featANorm, featBNorm)
-        #print ('corr 4d feature:', corr4d[0, 0, 0, 0, :, :])
         ## Mutual Match 
         corr4d = self.mutualMatch(corr4d)
-        #print ('mutual match:', corr4d[0, 0, 0, 0, :, :])
         ## Neighbor Consensus
         corr4d = self.NeighConsensus(corr4d)
-        #print ('output neigh consensus:', corr4d[0, 0, 0, 0, :, :])
         ## Mutual Match 
         corr4d = self.mutualMatch(corr4d)
-        #print ('final mutual match:', corr4d[0, 0, 0, 0, :, :])
         return corr4d
         
         

@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-def weakLossBatch(model, batch, softmaxMM):
+def weakLossBatch(model, batch):
 
     corr4d = model(batch['source_image'], batch['target_image'])
     
@@ -20,11 +20,11 @@ def weakLossBatch(model, batch, softmaxMM):
     score = torch.mean(scoreA + scoreB)/2
     return score
     
-def WeakLoss(model, batch, softmaxMM) : 
-    scorePos = weakLossBatch(model, batch, softmaxMM)
+def WeakLoss(model, batch) : 
+    scorePos = weakLossBatch(model, batch)
     b = batch['source_image'].size()[0]
     batch['source_image']=batch['source_image'][np.roll(np.arange(b),-1),:]
-    scoreNeg = weakLossBatch(model, batch, softmaxMM)
+    scoreNeg = weakLossBatch(model, batch)
     loss = scoreNeg - scorePos
     return loss
     

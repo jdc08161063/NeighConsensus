@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import ConnectionPatch
+import numpy as np
 
 def plotCorres(IA, IB, xA, yA, xB, yB, score = [], scoreTH = 0.5, lineColor = 'green', saveFig = 'toto.jpg') : 
     fig = plt.figure(figsize=(20,10))

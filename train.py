@@ -115,7 +115,7 @@ for epoch in range(1, args.nbEpoch + 1) :
             batch['source_image'] = batch['source_image'].cuda()
             batch['target_image'] = batch['target_image'].cuda()
         
-        loss = WeakLoss(model, batch, args.softmaxMM)
+        loss = WeakLoss(model, batch)
         loss.backward()
         
         optimizer.step()
