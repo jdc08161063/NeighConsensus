@@ -18,7 +18,7 @@ def plotCorres(IA, IB, xA, yA, xB, yB, score = [], scoreTH = 0.5, lineColor = 'g
         if len(score) >0 and score[i] < scoreTH :
             continue
         xyA = (int(xA[i] * wA),int(yA[i] * hA))
-        xyB = (int(xB[i] * wB),int(yA[i] * hB))
+        xyB = (int(xB[i] * wB),int(yB[i] * hB))
 
         con = ConnectionPatch(xyA=xyB, xyB=xyA, coordsA="data", coordsB="data",
                               axesA=ax2, axesB=ax1, color=lineColor, linewidth = 3)
