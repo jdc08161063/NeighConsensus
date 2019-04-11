@@ -24,7 +24,7 @@ parser.add_argument('--featExtractorPth', type=str, default = 'model/FeatureExtr
 parser.add_argument('--imgDir', type=str, default = 'data/pf-pascal/JPEGImages/', help='image Directory')
 parser.add_argument('--trainCSV', type=str, default = 'data/pf-pascal/train.csv', help='train csv')
 parser.add_argument('--testCSV', type=str, default = 'data/pf-pascal/test.csv', help='train csv')
-parser.add_argument('--maxTestSize', type=int, default = 1000, help='max size in the test image')
+parser.add_argument('--maxTestSize', type=int, default = 500, help='max size in the test image')
 parser.add_argument('--imgSize', type=int, default = 400, help='max size in the test image')
 
 
@@ -35,11 +35,9 @@ parser.add_argument('--nbEpoch', type=int, default=5, help='number of training e
 parser.add_argument('--neighConsKernel', nargs='+', type=int, default=[5,5,5], help='kernels sizes in neigh. cons.')
 parser.add_argument('--neighConsChannel', nargs='+', type=int, default=[16,16,1], help='channels in neigh. cons')
 parser.add_argument('--finetuneFeatExtractor', action='store_true', help='whether fine-tuning feature extractor')
-parser.add_argument('--featExtractor', type=str, default='ResNet18Conv4', choices=['ResNet18Conv4', 'ResNet18Conv5', 'ResNet101Conv4'], help='feature extractor')
+parser.add_argument('--featExtractor', type=str, default='ResNet101Conv4', choices=['ResNet18Conv4', 'ResNet18Conv5', 'ResNet101Conv4'], help='feature extractor')
 parser.add_argument('--cuda', action='store_true', help='GPU setting')
-parser.add_argument('--softmaxMM', action='store_true', help='whether use softmax Mutual Matching')
-parser.add_argument('--scoreTH', type=float, default=0.5, help='threshold of score to visualize matched grid')
-parser.add_argument('--sigma', type=float, default=0.01, help='sigma in the spatial term to compute weight')
+parser.add_argument('--sigma', type=float, default=0.0025, help='sigma in the spatial term to compute weight')
 parser.add_argument('--nbWeightPoint', type=int, default=4, help='number of point to do interpolation')
 parser.add_argument('--alpha', type=float, default=0.1, help='alpha in the PCK metric')
 
@@ -61,8 +59,7 @@ model = NCNet(kernel_sizes=args.neighConsKernel,
               channels=args.neighConsChannel, 
               featExtractor = args.featExtractor, 
               featExtractorPth = args.featExtractorPth, 
-              finetuneFeatExtractor = args.finetuneFeatExtractor,
-              softmaxMutualMatching = args.softmaxMM)
+              finetuneFeatExtractor = args.finetuneFeatExtractor)
 
 if not args.finetuneFeatExtractor:
     msg = '\nIgnore the gradient for the parameters in the feature extractor'
@@ -74,6 +71,7 @@ if not args.finetuneFeatExtractor:
 
 if args.resumePth : 
     msg = '\nResume from {}'.format(args.resumePth)
+    print (msg)
     model.load_state_dict(torch.load(args.resumePth))
     
 if args.cuda : 
@@ -122,7 +120,7 @@ for epoch in range(1, args.nbEpoch + 1) :
             batch['source_image'] = batch['source_image'].cuda()
             batch['target_image'] = batch['target_image'].cuda()
         
-        loss = WeakLoss(model, batch, args.softmaxMM)
+        loss = WeakLoss(model, batch)
         loss.backward()
         
         optimizer.step()
@@ -139,7 +137,7 @@ for epoch in range(1, args.nbEpoch + 1) :
     model.eval()
     
     with torch.no_grad() : 
-        pckRes = evalPascal(model, testTransform, df, args.featExtractor, args.softmaxMM, args.imgDir, args.maxTestSize, args.scoreTH, args.sigma, args.nbWeightPoint, args.alpha, None)
+        pckRes = evalPascal(model, testTransform, df, args.featExtractor, args.imgDir, args.maxTestSize, args.scoreTH, args.sigma, args.nbWeightPoint, args.alpha, None)
         
     testPCK = np.sum(pckRes * (pckRes >= 0).astype(np.float)) / np.sum(pckRes >= 0)
     msg = 'Epoch {:d}, Train Loss : {:.4f}, Test PCK : {:.4f}'.format(epoch, trainLoss , testPCK)
