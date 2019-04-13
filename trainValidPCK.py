@@ -20,7 +20,6 @@ parser = argparse.ArgumentParser(description='Nc-Net Training')
 ## Input / Output 
 parser.add_argument('--outDir', type=str, help='output model directory')
 parser.add_argument('--resumePth', type=str, help='resume model path')
-parser.add_argument('--featExtractorPth', type=str, default = 'model/FeatureExtractor/resnet18.pth', help='feature extractor path')
 parser.add_argument('--imgDir', type=str, default = 'data/pf-pascal/JPEGImages/', help='image Directory')
 parser.add_argument('--trainCSV', type=str, default = 'data/pf-pascal/train.csv', help='train csv')
 parser.add_argument('--testCSV', type=str, default = 'data/pf-pascal/test.csv', help='train csv')
@@ -57,8 +56,7 @@ np.random.seed(1)
 ## Initial Model
 model = NCNet(kernel_sizes=args.neighConsKernel, 
               channels=args.neighConsChannel, 
-              featExtractor = args.featExtractor, 
-              featExtractorPth = args.featExtractorPth, 
+              featExtractor = args.featExtractor,
               finetuneFeatExtractor = args.finetuneFeatExtractor)
 
 if not args.finetuneFeatExtractor:
@@ -137,7 +135,7 @@ for epoch in range(1, args.nbEpoch + 1) :
     model.eval()
     
     with torch.no_grad() : 
-        pckRes = evalPascal(model, testTransform, df, args.featExtractor, args.imgDir, args.maxTestSize, args.scoreTH, args.sigma, args.nbWeightPoint, args.alpha, None)
+        pckRes = evalPascal(model, testTransform, df, args.featExtractor, args.imgDir, args.maxTestSize, args.sigma, args.nbWeightPoint, args.alpha, None)
         
     testPCK = np.sum(pckRes * (pckRes >= 0).astype(np.float)) / np.sum(pckRes >= 0)
     msg = 'Epoch {:d}, Train Loss : {:.4f}, Test PCK : {:.4f}'.format(epoch, trainLoss , testPCK)

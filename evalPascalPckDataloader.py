@@ -15,7 +15,7 @@ def resizeImg(I, minNet, strideNet, maxSize) :
     
     resizeW = round((w - minNet) / strideNet) * strideNet  + minNet
     resizeH = round((h - minNet) / strideNet) * strideNet + minNet
-    
+    #resizeW, resizeW = max(resizeW, resizeW), max(resizeW, resizeW)
     
     return I.resize((resizeW-1, resizeH-1))
     

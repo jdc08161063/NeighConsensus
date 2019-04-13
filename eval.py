@@ -37,7 +37,6 @@ def evalPascal(model, testTransform, df, featExtractor, imgDir, maxSize, sigma, 
     for i in tqdm(range(nbPair)) : 
         IA, IB, xA, yA, xB, yB, refPCK, wAOrg, hAOrg, wBOrg, hBOrg = getIndexMatchGT(df, imgDir, minNet, strideNet, maxSize, i)
         
-        
         ## Plot GT matching
         if saveDir: 
             outPath = os.path.join(saveDir, 'GT{:d}.jpg'.format(i))
@@ -125,7 +124,6 @@ if __name__ == '__main__' :
     ## Input / Output 
     parser.add_argument('--saveDir', type=str, help='output visual directory')
     parser.add_argument('--resumePth', type=str, help='resume model path')
-    parser.add_argument('--featExtractorPth', type=str, default = 'model/FeatureExtractor/resnet18.pth', help='feature extractor path')
     parser.add_argument('--imgDir', type=str, default = 'data/pf-pascal/JPEGImages/', help='image Directory')
     parser.add_argument('--testCSV', type=str, default = 'data/pf-pascal/test.csv', help='train csv')
     parser.add_argument('--maxSize', type=int, default = 500, help='max size in the test image')
@@ -145,8 +143,7 @@ if __name__ == '__main__' :
     ## Initial Model
     model = NCNet(kernel_sizes=args.neighConsKernel, 
                   channels=args.neighConsChannel, 
-                  featExtractor = args.featExtractor, 
-                  featExtractorPth = args.featExtractorPth, 
+                  featExtractor = args.featExtractor,
                   finetuneFeatExtractor = False)
             
 
