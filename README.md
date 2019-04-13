@@ -25,13 +25,6 @@ More visual results can be found [here](http://imagine.enpc.fr/~shenx/visualRes/
 
 ## Installation
 
-To download Pre-trained feature extractor (ResNet 18 ): 
-
-``` Bash
-cd model/FeatureExtractor
-bash download.sh
-```
-
 To download PF Pascal Dataset : 
 
 ``` Bash
