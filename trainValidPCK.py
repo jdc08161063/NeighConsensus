@@ -139,6 +139,8 @@ for epoch in range(1, args.nbEpoch + 1) :
         
     testPCK = np.sum(pckRes * (pckRes >= 0).astype(np.float)) / np.sum(pckRes >= 0)
     msg = 'Epoch {:d}, Train Loss : {:.4f}, Test PCK : {:.4f}'.format(epoch, trainLoss , testPCK)
+    history["TrainLoss"].append(trainLoss)
+    history["ValLoss"].append(valLoss)
     with open(outHistory, 'w') as f :
         json.dump(history, f)
     print (msg)
