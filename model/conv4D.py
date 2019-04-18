@@ -14,15 +14,11 @@ def conv4d(data,filters,bias=None,permute_filters=True):
         filters=filters.permute(2,0,1,3,4,5).contiguous() # permute to avoid making contiguous inside loop    
 
     c_out=filters.size(1)
-    output = torch.zeros(h,b,c_out,w,d,t)
+    output = torch.zeros((h,b,c_out,w,d,t), device=data.get_device())
     
     padding=filters.size(0)//2
     ## Padding parameter
-    Z=torch.zeros(padding,b,c,w,d,t) 
-    
-    if data.is_cuda:
-        Z=Z.cuda(data.get_device())    
-        output=output.cuda(data.get_device())
+    Z=torch.zeros((padding,b,c,w,d,t), device=data.get_device()) 
         
     data_padded = torch.cat((Z,data,Z),0)
     
